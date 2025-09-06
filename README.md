@@ -1,77 +1,186 @@
 # MySQL Schema Diff Reporter
 
-A tool to compare MySQL database schemas and generate diff reports in Markdown and HTML formats.
+A powerful tool for comparing MySQL database schemas and generating detailed, interactive diff reports. Perfect for database migrations, schema reviews, and change tracking.
 
-## Features
+![MySQL Schema Diff Reporter](https://raw.githubusercontent.com/raghavendra-k-j/mysql-schema-diff/main/docs/images/preview.png)
 
-- Compare two MySQL database schemas
-- Detect added and removed tables
-- Detect added and removed columns in existing tables
-- Generate Markdown and HTML reports
-- Interactive Streamlit UI with review checkboxes
-- Export review status as JSON
+## 🌟 Features
 
-## Installation
+### Core Functionality
+- **Schema Comparison**: Compare two MySQL databases and identify all structural differences
+- **Detailed Analysis**: Track changes in tables and columns with precise type information
+- **Read-Only Operations**: Safe, non-destructive database access
 
-1. Clone this repository:
+### Change Detection
+- ➕ Added tables and their complete structure
+- ➖ Removed tables and their previous structure
+- 📝 Modified tables with column-level changes:
+  - New columns added
+  - Columns removed
+  - Full column details (type, nullability, defaults, keys)
+
+### Interactive UI
+- **Modern Interface**: Clean, responsive Streamlit-based UI
+- **Connection Management**:
+  - 💾 Save connection details securely
+  - 🔐 Encrypted password storage
+  - 🗑️ Clear saved credentials option
+- **Review Workflow**:
+  - ✓ Checkbox-based review tracking
+  - 📊 Progress indicators
+  - Bulk actions (Check All/Uncheck All)
+
+### Export Options
+- 📄 **Markdown Report** (`schema_diff.md`):
+  - Clean, readable format
+  - Perfect for version control
+  - Sections for added, removed, and modified tables
+  
+- 🎨 **HTML Report** (`schema_diff.html`):
+  - Professional styling with Git-style diffs
+  - Green/Red color coding for additions/removals
+  - Interactive table of contents
+  - Review checkboxes
+  - Mobile-responsive design
+  
+- 📋 **Review Status** (`reviewed.json`):
+  - Track review progress
+  - Export review state for documentation
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Python 3.10+
+- MySQL Server
+- Git
+
+### Installation
+
+1. **Clone the Repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/raghavendra-k-j/mysql-schema-diff.git
    cd mysql-schema-diff
    ```
 
-2. Create a virtual environment (optional but recommended):
+2. **Set Up Python Environment**
    ```bash
+   # Create virtual environment
    python -m venv venv
-   .\venv\Scripts\activate  # Windows
-   source venv/bin/activate # Linux/macOS
+   
+   # Activate it:
+   # On Windows:
+   .\venv\Scripts\activate
+   # On Linux/macOS:
+   source venv/bin/activate
    ```
 
-3. Install dependencies and the package:
+3. **Install Dependencies**
    ```bash
    pip install -r requirements.txt
-   pip install -e .  # Install the package in development mode
+   pip install -e .  # Install package in development mode
    ```
 
-## Usage
+### Running the Application
 
-1. Start the application:
+1. **Start the App**
    ```bash
    python run.py
    ```
 
-2. In the sidebar:
-   - Enter MySQL connection details (host, port, username, password)
-   - Specify the old and new database names
-   - Click "Compare Schemas"
+2. **Configure Connection**
+   - Enter MySQL connection details:
+     - Host (default: localhost)
+     - Port (default: 3306)
+     - Username
+     - Password
+     - Old database name
+     - New database name
+   - Optionally save connection details for future use
 
-3. Review the differences:
-   - View added/removed tables and column changes
-   - Use checkboxes to mark reviewed items
-   - Use "Check All" / "Uncheck All" buttons for bulk actions
+3. **Compare Schemas**
+   - Click "🔍 Compare Schemas"
+   - Review the differences in three sections:
+     - Added Tables (green)
+     - Removed Tables (red)
+     - Changed Tables (with column details)
 
-4. Export reports:
-   - Click "Export Markdown" for a text-based report
-   - Click "Export HTML" for a styled report with checkboxes
-   - Click "Export Review Status" to save review progress as JSON
+4. **Review Changes**
+   - Expand/collapse table sections
+   - Check/uncheck tables as you review
+   - Use bulk actions for efficient review
 
-## Output Files
+5. **Export Reports**
+   - Generate Markdown report
+   - Generate HTML report
+   - Export review status
 
-- `schema_diff.md`: Markdown report with all changes
-- `schema_diff.html`: HTML report with styling and checkboxes
-- `reviewed.json`: JSON file with review status of each table
+## 🔒 Security Features
 
-## Security Notes
+- **Secure Storage**:
+  - Connection details stored locally
+  - Passwords encrypted using industry-standard cryptography
+  - No remote data transmission
 
-- Database credentials are not logged or stored
-- Read-only operations only; no database modifications
-- Local file output only; no network transmission of data
+- **Safe Operations**:
+  - Read-only database access
+  - No schema modifications
+  - No data access beyond schema metadata
 
-## Requirements
+## 🛠️ Technical Details
 
-- Python 3.10 or higher
-- MySQL Server
-- Required Python packages (see requirements.txt):
-  - streamlit
-  - mysql-connector-python
-  - pandas
-  - jinja2
+### Dependencies
+- **Core**:
+  - `streamlit>=1.26.0`: Modern web UI
+  - `mysql-connector-python>=8.1.0`: Database connectivity
+  - `jinja2>=3.1.2`: HTML report templating
+  - `cryptography>=41.0.0`: Secure credential storage
+
+### Database Access
+- Uses `information_schema` for metadata
+- Key queries:
+  ```sql
+  -- Tables
+  SELECT TABLE_NAME FROM information_schema.TABLES 
+  WHERE TABLE_SCHEMA = %s AND TABLE_TYPE = 'BASE TABLE'
+
+  -- Columns
+  SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE, ...
+  FROM information_schema.COLUMNS 
+  WHERE TABLE_SCHEMA = %s
+  ```
+
+### Project Structure
+```
+mysql-schema-diff/
+├── app/
+│   ├── __init__.py
+│   ├── main.py          # Streamlit UI
+│   ├── db.py            # Database operations
+│   ├── diff.py          # Schema comparison
+│   ├── render_markdown.py
+│   ├── render_html.py
+│   ├── utils.py         # Helper functions
+│   └── templates/
+│       └── report.html.j2
+├── requirements.txt
+├── setup.py
+└── README.md
+```
+
+## 📝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by the need for better database schema comparison tools
+- Built with Python and modern web technologies
+- Special thanks to the Streamlit team for their amazing framework
