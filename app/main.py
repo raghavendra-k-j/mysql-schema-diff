@@ -77,7 +77,7 @@ def main():
     st.title("MySQL Schema Diff Reporter")
     init_session_state()
     
-    from .utils import save_connection_details, load_connection_details, clear_connection_details
+    from app.utils import save_connection_details, load_connection_details, clear_connection_details
 
     # Sidebar inputs
     with st.sidebar:

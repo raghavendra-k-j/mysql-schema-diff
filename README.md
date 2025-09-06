@@ -23,7 +23,7 @@ A powerful tool for comparing MySQL database schemas and generating detailed, in
 - **Modern Interface**: Clean, responsive Streamlit-based UI
 - **Connection Management**:
   - 💾 Save connection details securely
-  - 🔐 Encrypted password storage
+  - 🔐 Simple password protection
   - 🗑️ Clear saved credentials option
 - **Review Workflow**:
   - ✓ Checkbox-based review tracking
@@ -116,10 +116,11 @@ A powerful tool for comparing MySQL database schemas and generating detailed, in
 
 ## 🔒 Security Features
 
-- **Secure Storage**:
+- **Local Storage**:
   - Connection details stored locally
-  - Passwords encrypted using industry-standard cryptography
+  - Basic password protection using simple XOR encryption
   - No remote data transmission
+  - Suitable for development environment use
 
 - **Safe Operations**:
   - Read-only database access
@@ -133,7 +134,7 @@ A powerful tool for comparing MySQL database schemas and generating detailed, in
   - `streamlit>=1.26.0`: Modern web UI
   - `mysql-connector-python>=8.1.0`: Database connectivity
   - `jinja2>=3.1.2`: HTML report templating
-  - `cryptography>=41.0.0`: Secure credential storage
+  - Built-in `base64` module for basic password protection
 
 ### Database Access
 - Uses `information_schema` for metadata
