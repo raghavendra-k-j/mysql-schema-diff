@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL Schema Diff Report</title>
+    <style>
+        :root {
+            --added-color: #16a34a;
+            --removed-color: #dc2626;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #1a1a1a;
+        }
+        
+        .nav {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e5e5;
+            margin-bottom: 2rem;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #f3f4f6;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            color: #4b5563;
+        }
+        
+        .back-to-top:hover {
+            background: #e5e7eb;
+        }
+        
+        h1, h2, h3 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .summary {
+            font-size: 1.25rem;
+            margin: 1rem 0;
+        }
+        
+        .toc {
+            background: #f9fafb;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            margin: 2rem 0;
+        }
+        
+        .added {
+            color: var(--added-color);
+        }
+        
+        .removed {
+            color: var(--removed-color);
+        }
+        
+        .col-list {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .col-list li {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .col-list li::before {
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+        
+        .added li::before {
+            content: "+";
+            color: var(--added-color);
+        }
+        
+        .removed li::before {
+            content: "–";
+            color: var(--removed-color);
+        }
+        
+        .table-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        code {
+            font-family: ui-monospace, monospace;
+            background: #f3f4f6;
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>MySQL Schema Diff Report</h1>
+    <p>Generated on: {{ timestamp }}</p>
+
+    {% if summary %}
+    <div class="summary">
+        {{ summary }}
+    </div>
+    {% endif %}
+
+    {% if has_changes %}
+    <nav class="nav">
+        <div class="toc">
+            <h2>Table of Contents</h2>
+            <ul>
+                {% if added_tables %}
+                <li><a href="#added-tables">Added Tables</a></li>
+                {% endif %}
+                {% if removed_tables %}
+                <li><a href="#removed-tables">Removed Tables</a></li>
+                {% endif %}
+                {% if changed_tables %}
+                <li>
+                    <a href="#column-changes">Column Changes</a>
+                    <ul>
+                        {% for table in changed_tables|sort %}
+                        <li><a href="#table-{{ table }}">{{ table }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    {% if added_tables %}
+    <h2 id="added-tables">Added Tables</h2>
+    <ul class="col-list added">
+        {% for table in added_tables|sort %}
+        <li><code>{{ table }}</code></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if removed_tables %}
+    <h2 id="removed-tables">Removed Tables</h2>
+    <ul class="col-list removed">
+        {% for table in removed_tables|sort %}
+        <li><code>{{ table }}</code></li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if changed_tables %}
+    <h2 id="column-changes">Column Changes</h2>
+    {% for table, diff in changed_tables|dictsort %}
+    <div class="table-section">
+        <div class="table-header">
+            <h3 id="table-{{ table }}">{{ table }}</h3>
+            <input type="checkbox" title="Mark as reviewed">
+        </div>
+
+        {% if diff.added_columns %}
+        <h4 class="added">Added Columns</h4>
+        <ul class="col-list added">
+            {% for name, info in diff.added_columns|dictsort %}
+            <li>
+                <code>{{ name }}</code>
+                <code>{{ info.column_type }}</code>
+                {% if info.is_nullable == "NO" %}NOT NULL{% endif %}
+                {% if info.column_default %}DEFAULT {{ info.column_default }}{% endif %}
+                {% if info.column_key %}{{ info.column_key }}{% endif %}
+                {% if info.extra %}{{ info.extra }}{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if diff.removed_columns %}
+        <h4 class="removed">Removed Columns</h4>
+        <ul class="col-list removed">
+            {% for name, info in diff.removed_columns|dictsort %}
+            <li>
+                <code>{{ name }}</code>
+                <code>{{ info.column_type }}</code>
+                {% if info.is_nullable == "NO" %}NOT NULL{% endif %}
+                {% if info.column_default %}DEFAULT {{ info.column_default }}{% endif %}
+                {% if info.column_key %}{{ info.column_key }}{% endif %}
+                {% if info.extra %}{{ info.extra }}{% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% else %}
+    <div class="summary">
+        <em>No schema changes detected.</em>
+    </div>
+    {% endif %}
+
+    <a href="#" class="back-to-top">Back to Top</a>
+</body>
+</html>

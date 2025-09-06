@@ -1,0 +1,13 @@
+README.md
+setup.py
+app/__init__.py
+app/db.py
+app/diff.py
+app/main.py
+app/render_html.py
+app/render_markdown.py
+mysql_schema_diff.egg-info/PKG-INFO
+mysql_schema_diff.egg-info/SOURCES.txt
+mysql_schema_diff.egg-info/dependency_links.txt
+mysql_schema_diff.egg-info/requires.txt
+mysql_schema_diff.egg-info/top_level.txt
